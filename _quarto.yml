@@ -1,0 +1,27 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Proyecto Intermodular"
+  author: "Manuel Navas Damas"
+  chapters:
+    - index.qmd
+    - part: "Fase de producción"
+      chapters:
+        - temas/03-produccion/m03-t01-git.qmd
+        - temas/03-produccion/m03-t02-github.qmd
+        - temas/03-produccion/m03-t03-inicio-rapido-github-actions.qmd
+
+filters:
+  - include-code-files
+
+lang: es
+
+format:
+  html:
+    theme: cosmo
+    code-copy: true
+    toc: true
+  pdf:
+    documentclass: scrreprt

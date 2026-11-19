@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Introducción GitHub Actions – Proyecto Intermodular</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../temas/03-produccion/m03-t02-github.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-47347268070508084662a88d6a887909.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Saltar al contenido principal</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" aria-label="Barra de herramientas">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Hilo de Ariadna"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../temas/03-produccion/m03-t01-git.html">Fase de producción</a></li><li class="breadcrumb-item"><a href="../../temas/03-produccion/m03-t03-inicio-rapido-github-actions.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción GitHub Actions</span></a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Sitio web">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Proyecto Intermodular</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Fase de producción</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../temas/03-produccion/m03-t01-git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Control de versiones con Git</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../temas/03-produccion/m03-t02-github.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Github</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../temas/03-produccion/m03-t03-inicio-rapido-github-actions.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción GitHub Actions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#objetivos-de-aprendizaje" id="toc-objetivos-de-aprendizaje" class="nav-link active" data-scroll-target="#objetivos-de-aprendizaje">Objetivos de aprendizaje</a></li>
+  <li><a href="#preparación-del-repositorio" id="toc-preparación-del-repositorio" class="nav-link" data-scroll-target="#preparación-del-repositorio"><span class="header-section-number">3.1</span> Preparación del repositorio</a></li>
+  <li><a href="#mi-primer-workflow" id="toc-mi-primer-workflow" class="nav-link" data-scroll-target="#mi-primer-workflow"><span class="header-section-number">3.2</span> Mi primer workflow</a></li>
+  <li><a href="#variables-de-usuario-y-entorno" id="toc-variables-de-usuario-y-entorno" class="nav-link" data-scroll-target="#variables-de-usuario-y-entorno"><span class="header-section-number">3.3</span> Variables de usuario y entorno</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Hilo de Ariadna"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../temas/03-produccion/m03-t01-git.html">Fase de producción</a></li><li class="breadcrumb-item"><a href="../../temas/03-produccion/m03-t03-inicio-rapido-github-actions.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción GitHub Actions</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción GitHub Actions</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>GitHub Actions es la herramienta de automatización integrada en GitHub. Con ella definimos <strong>workflows</strong> (flujos de trabajo): procesos automáticos que se ejecutan cuando ocurre algo en nuestro repositorio. Por ejemplo, cuando se abre un <em>pull request</em>, cuando se fusiona código en la rama <code>main</code> o cuando se crea una etiqueta, entre otras muchas posibilidades. En cada uno de esos casos podemos lanzar un proceso que haga por nosotros la tarea que nos interese.</p>
+<p>Además, no estamos limitados al propio GitHub. Podríamos crear un workflow que, cada vez que se haga un <em>push</em> a la rama <code>main</code>, genere una nueva etiqueta y actualice el código en nuestro propio servidor, donde se está ejecutando la aplicación. Es una herramienta muy potente que GitHub pone a nuestra disposición.</p>
+<p>En este apartado veremos cómo crear nuestros propios workflows. Para entenderlo, podemos compararlo con una receta de cocina. El workflow sería la receta completa para preparar un plato (por ejemplo, pasta carbonara), y cada una de las instrucciones que hay que seguir para elaborarla serían los <strong>pasos</strong> (<em>steps</em>). Muchos de esos pasos usan <strong>acciones</strong> (<em>actions</em>), que son piezas ya preparadas y reutilizables, como usar una salsa que ya viene hecha en lugar de prepararla desde cero. Nuestro objetivo es entender qué hace cada uno de esos pasos.</p>
+<p>Hoy en día, gracias a la IA, es bastante fácil generar un workflow. Pero lo importante no es que un agente de IA sea capaz de crearlo, sino que nosotros seamos capaces de leerlo y entenderlo. Lo mismo ocurre con los workflows que encontremos en Internet o con los que el propio GitHub nos sugiere según el tipo de repositorio. En todos los casos tenemos que <strong>saber leerlos, entenderlos y adaptarlos a nuestras necesidades</strong>.</p>
+<section id="objetivos-de-aprendizaje" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="objetivos-de-aprendizaje">Objetivos de aprendizaje</h3>
+<p><strong>En esta sección vamos a aprender sobre</strong> GitHub Actions y la automatización de tareas mediante workflows, desde la creación del primer flujo hasta su depuración.</p>
+<p>Temas puntuales:</p>
+<ul>
+<li><p>Creación de workflows: estructura, eventos, jobs y steps</p></li>
+<li><p>Variables de usuario y de entorno, y recepción de data externa (inputs)</p></li>
+<li><p>Actions comunes como checkout e instalaciones dentro del runner</p></li>
+<li><p>CRON Jobs y ejecución de scripts personalizados</p></li>
+<li><p>Depuración de scripts y workflows</p></li>
+</ul>
+</section>
+<section id="preparación-del-repositorio" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="preparación-del-repositorio"><span class="header-section-number">3.1</span> Preparación del repositorio</h2>
+<p>Para trabajar en este apartado necesitamos tener el siguiente repositorio en nuestra cuenta de GitHub:</p>
+<p><a href="https://github.com/KlerithX2/legion-del-mal" class="uri">https://github.com/KlerithX2/legion-del-mal</a></p>
+<p>No hace falta conservar todo el historial de commits. Lo que sí necesitamos es la misma estructura de archivos y directorios, porque a lo largo del apartado vamos a modificar código, consultar <em>issues</em> y, en definitiva, trabajar con distintas partes del repositorio. Hay dos formas de conseguirlo:</p>
+<ul>
+<li><strong>Descargar el código fuente</strong> en formato <code>.zip</code> y subirlo después como un repositorio nuevo en nuestra cuenta.</li>
+<li><strong>Hacer un <em>fork</em></strong> del repositorio original. Si elegimos esta opción, hay que tener en cuenta dos cosas:
+<ul>
+<li>Los <em>issues</em> vienen desactivados por defecto en los <em>forks</em>. Hay que activarlos en <em>Settings → General → Features → Issues</em>, porque más adelante vamos a trabajar con ellos.</li>
+<li>Los workflows también vienen desactivados por defecto. La primera vez que entremos en la pestaña <em>Actions</em>, GitHub nos pedirá confirmar que queremos habilitarlos.</li>
+</ul></li>
+</ul>
+<p>Con el repositorio listo, vamos a la pestaña <strong>Actions</strong> del repositorio.</p>
+<p>GitHub Actions es la plataforma de GitHub para la <strong>integración continua y el despliegue continuo</strong> (CI/CD, <em>Continuous Integration / Continuous Deployment</em>). Nos permite ejecutar tareas automáticas cuando ocurre un evento en el repositorio. Por ejemplo:</p>
+<ul>
+<li>se sube un cambio al código,</li>
+<li>se crea o se modifica un <em>issue</em>,</li>
+<li>se abre un <em>pull request</em>,</li>
+<li>o se llega a una hora programada (por ejemplo, todos los lunes a las 8:00).</li>
+</ul>
+<p>Estas tareas se definen en <strong>workflows</strong> y se ejecutan en máquinas llamadas <strong>runners</strong>. Normalmente usamos los runners que proporciona GitHub, que son máquinas virtuales que se crean para cada ejecución. También podemos configurar runners propios (<em>self-hosted</em>) en nuestros servidores.</p>
+<p><img src="images/t03-img002-workflows-runners.png" class="img-fluid"></p>
+<p>A partir de ahora vamos a crear <em>workflows</em> que realizan tareas sobre nuestro repositorio: modificar su contenido, enviar una notificación o, en general, cualquier cosa que nos interese automatizar. Las posibilidades son prácticamente ilimitadas.</p>
+<p>Para terminar de preparar el entorno, necesitamos <strong>tener los ficheros del repositorio en local</strong>, porque a partir de ahora editaremos los workflows desde VS Code. Basta con clonar el repositorio que hemos creado en nuestra cuenta de GitHub, ya sea un <em>fork</em> o uno nuevo subido desde el <code>.zip</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/<span class="op">&lt;</span>tu-usuario<span class="op">&gt;</span>/legion-del-mal.git</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="mi-primer-workflow" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="mi-primer-workflow"><span class="header-section-number">3.2</span> Mi primer workflow</h2>
+<p>Para crear nuestro primer workflow, nos dirigimos a la pestaña actions y pulsaremos sobre el botón <em>New workflow</em>.</p>
+<p><img src="images/t03-img003-new-workflow.png" class="img-fluid"></p>
+<p>En esta nueva pantalla, habitualmente GitHub nos proporcionará una sección denominada “Suggested for this repository”, donde encontraremos un elemento denominado “<strong>Simple workflow</strong>”:</p>
+<p><img src="images/t03-img004-simple-workflow.png" class="img-fluid"></p>
+<p>Como se indica en la captura, en el caso de que GitHub no nos sugiera este workflow, siempre podríamos utilizar el cuadro de búsqueda para buscar este mismo elemento por nuestra cuenta. Una vez localizado seleccionamos la opción “<strong>Configure</strong>” del mismo.</p>
+<p>A continuación se nos muestra una nueva pantalla donde podemos ver y editar el código que compone este workflow. Vamos a proceder ahora a analizar lo que se nos muestra aquí:</p>
+<p><img src="images/t03-img005-edit-workflow.png" class="img-fluid"></p>
+<p>Como se puede observar, al crear un nuevo workflow se genera un archivo tipo <code>.yml</code> que podemos renombrar como mejor nos parezca (el nombre debe ser algo descriptivo sobre la tarea que va a hacer, pero no está técnicamente asociado a ninguna otra parte del proyecto). Este archivo se alojará en la carpeta <code>workflows</code>, que a su vez se encuentra dentro del directorio oculto <code>.github</code> de la raíz de nuestro repositorio.</p>
+<p>Debajo de la ruta donde se alojará el fichero, tendremos acceso al editor de código del mismo. Aquí tendremos la posibilidad de activar el modo <em>edit</em> (para modificar el archivo directamente) y el modo <em>preview</em> (solo lectura). Vamos a analizar lo que nos contiene este archivo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a basic workflow to help you get started with Actions</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> CI</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Controls when the workflow will run</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">  # Triggers the workflow on push or pull request events but only for the "main" branch</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">push</span><span class="kw">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">branches</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> </span><span class="st">"main"</span><span class="at"> </span><span class="kw">]</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pull_request</span><span class="kw">:</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">branches</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> </span><span class="st">"main"</span><span class="at"> </span><span class="kw">]</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">  # Allows you to run this workflow manually from the Actions tab</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">workflow_dispatch</span><span class="kw">:</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># A workflow run is made up of one or more jobs that can run sequentially or in parallel</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">  # This workflow contains a single job called "build"</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">    # The type of runner that the job will run on</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">    # Steps represent a sequence of tasks that will be executed as part of the job</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v4</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">      # Runs a single command using the runners shell</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run a one-line script</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">run</span><span class="kw">:</span><span class="at"> echo Hello, world!</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">      # Runs a set of commands using the runners shell</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run a multi-line script</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>          echo Add other actions to build,</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>          echo test, and deploy your project.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A continuación vamos a ir desgranando cada una de sus partes:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> CI</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esta línea nos indica el <strong>nombre</strong> que tiene el workflow, en este caso “CI” que viene de “Continous Integration”. Básicamente es un título descriptivo del trabajo que el workflow va a realizar y es totalmente personalizable.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Controls when the workflow will run</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">  # Triggers the workflow on push or pull request events but only for the "main" branch</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">push</span><span class="kw">:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">branches</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> </span><span class="st">"main"</span><span class="at"> </span><span class="kw">]</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pull_request</span><span class="kw">:</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">branches</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at"> </span><span class="st">"main"</span><span class="at"> </span><span class="kw">]</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">  # Allows you to run this workflow manually from the Actions tab</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">workflow_dispatch</span><span class="kw">:</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La instrucción <code>on</code> nos indica básicamente <strong>qué evento (o eventos) debe suceder para que se ejecute este workflow</strong> de forma automática. En este ejemplo en concreto nos está indicando que se activará cuando se haga un <em>push</em> o un <em>pull request</em> a la rama <em>main</em> (en este caso solo hay una, pero si nos fijamos, el nombre de la rama está dentro de un array por lo cual podríamos añadir más de una).</p>
+<p>Habitualmente, en esta parte de los workflows, también podemos encontrar la instrucción <code>workflow_dispatch:</code> (como en este caso). Esta instrucción es la que nos permite poder lanzar el workflow directamente desde la propia interfaz de GitHub Actions. Si esta instrucción no aparece significa que el workflow solo se activará cuando se den algunos de los eventos establecidos en la sección <code>on</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A workflow run is made up of one or more jobs that can run sequentially or in parallel</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">  # This workflow contains a single job called "build"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">    # The type of runner that the job will run on</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    # Steps represent a sequence of tasks that will be executed as part of the job</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v4</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">      # Runs a single command using the runners shell</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run a one-line script</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">run</span><span class="kw">:</span><span class="at"> echo Hello, world!</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">      # Runs a set of commands using the runners shell</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run a multi-line script</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>          echo Add other actions to build,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>          echo test, and deploy your project.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Por último, tenemos la sección de la instrucción <code>jobs</code>. Básicamente un workflow se compone de uno o más de estos trabajos que se pueden ejecutar secuencialmente o en paralelo. En este caso nuestro workflow solo tiene un único trabajo denominado “build”, aunque en realidad este nombre no es una instrucción, es decir es totalmente personalizable y podríamos llamarlo como nos interese (“construcción”, “reporte”, …).</p>
+<p>Ahora bien, usualmente a continuación del nombre del trabajo vamos a ver una instrucción tipo <code>runs-on</code> que nos indica qué servidor va a ejecutar este trabajo (alguno de los “runners” que hemos mencionado previamente). Por ejemplo, en este caso podemos ver que se va a ejecutar en un servidor que aloja una máquina virtual con la última versión del sistema operativo <em>Ubuntu</em> y una serie de preinstalaciones. Algunas de las máquinas virtuales que podríamos invocar aquí son: ubuntu-latest, ubuntu-22.04, ubuntu-20.04, windows-latest, windows-2022, windows-2019, <code>macos-latest</code>, <code>macos-13</code> o <code>macos-12</code>.</p>
+<p>A continuación ya sí vamos a ver la parte de lo que denominamos “acciones”. Dentro de la instrucción <code>steps</code> se definen una serie de pasos: - En primer lugar se llama a la acción denominada <code>actions/checkout@v4</code> que basicamente lo que hace es habilitarnos el acceso a nuestro repositorio cargandolo en la máquina Ubuntu que hemos configurado, para que esté disponible (no os preocupéis de momento por esto porque lo vamos a practicar más adelante). El <code>@v4</code> nos indica la versión de la acción. - A continuación escribe las instrucciones para ejecutar un script de una única línea. <code>name</code> nos indica el nombre que tendrá el script, mientras que <code>run</code> contine la instrucción que se ejecutará, en este caso un simple <code>echo Hello, world!</code>. - Por último, tenemos las instrucciones que nos permiten ejecutar un script de múltiples líneas. Del mismo modo que antes, en el <code>name</code> se establece el nombre del script mientras que en <code>run</code> se escribe el carácter de tubería <code>|</code> seguido de las instrucciones que deseemos ejecutar. En este ejemplo se puede observar que simplemente se ejecutarían dos <code>echo</code>.</p>
+<p>Dejando a un lado el panel de edición y revisión del código, nos fijamo ahora en el panel de la derecha:</p>
+<div id="fig-menu-lat-derecho" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-menu-lat-derecho-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-menu-lat-derecho" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-marketplace" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-marketplace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-2.png" class="img-fluid figure-img" data-ref-parent="fig-menu-lat-derecho">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-marketplace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Marketplace
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-menu-lat-derecho" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-documentacion" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-documentacion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-1.png" class="img-fluid figure-img" data-ref-parent="fig-menu-lat-derecho">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-documentacion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Documentacion
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-menu-lat-derecho-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.1: Menú lateral derecho
+</figcaption>
+</figure>
+</div>
+<p>En la figura <a href="#fig-marketplace" class="quarto-xref">Figura&nbsp;<span>3.1 (a)</span></a> encontramos una <strong>“tienda” de acciones</strong> que podríamos añadir a nuestro workflow. Desde aquí podríamos buscar acciones concretas que nos interesen para nuestro caso concreto, por ejemplo en la figura <a href="#fig-accion-ejemplo" class="quarto-xref">Figura&nbsp;<span>3.2</span></a> se muestra una acción del marketplace para configurar un entorno de Node.js en nuestro <em>runner</em>. Para usarlo simplemente podríamos copiar el código de la sección “Installation” y pegarlo en nuestro fichero <code>.yml</code>.</p>
+<blockquote class="blockquote">
+<p>Tener en cuenta que si revisamos este código, hay mucho texto dentro de la sección <code>with</code>. Esto es porque esta sección de la configuración de la acción es totalmente opcional y nos permite, si fuese necesario, añadir argumentos que nosotros le podemos mandar a una acción (lo veremos más adelante).</p>
+</blockquote>
+<div id="fig-accion-ejemplo" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-accion-ejemplo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-3.png" class="img-fluid figure-img" style="width:40.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-accion-ejemplo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.2: Acción de ejemplo: Setup node.js
+</figcaption>
+</figure>
+</div>
+<p>Por otro lado, en la figura <a href="#fig-documentacion" class="quarto-xref">Figura&nbsp;<span>3.1 (b)</span></a> se muestra la <strong>documentación</strong> que nos proporciona el propio GitHub del workflow y las acciones que contiene.</p>
+<p>A continuación, vamos a realizar el <em>commit</em> de los cambios que hemos realizado (la creación del archivo <code>.yml</code>), de la forma en que se muestra en <a href="#fig-commit-first-workflow" class="quarto-xref">Figura&nbsp;<span>3.3</span></a> (podemos establecer un mensaje personalizado si lo deseamos).</p>
+<div id="fig-commit-first-workflow" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-commit-first-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-4.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-commit-first-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.3: Commit creación de mi primer workflow
+</figcaption>
+</figure>
+</div>
+<p>Por si no habéis caido, al hacer esto ya directamente vamos a provocar que se lance el workflow, ya que estamos añadiendo un <em>commit</em> (que en realidad es lo mismo que hacer un <em>push</em>) al <em>main</em>. De hecho si nada mas crear el <em>commit</em> nos dirigimos al panel de <em>actions</em> en nuestro repositorio de GitHub podremos ver que la acción se está ejecutando, algo similar a lo que se muestra en la siguiente figura.</p>
+<div id="fig-workflow-exec" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-workflow-exec-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-5.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-workflow-exec-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.4: Workflow en ejecución
+</figcaption>
+</figure>
+</div>
+<p>Cuando se termine de ejecutar el workflow se quedará el registro dentro de la pestaña de <em>actions</em> y podremos revisarlo y comprobar qué sucedió durante su ejecución.</p>
+<div id="fig-review-workflow-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-review-workflow-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-6.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-review-workflow-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.5: Listado de workflows ejecutados (pestaña Actions)
+</figcaption>
+</figure>
+</div>
+<div id="fig-review-workflow-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-review-workflow-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-7.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-review-workflow-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.6: Detalle del workflow CI que acabamos de crear y ejecutar
+</figcaption>
+</figure>
+</div>
+<div id="fig-review-workflow-3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-review-workflow-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-8.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-review-workflow-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.7: Detalle del job denominado “build”
+</figcaption>
+</figure>
+</div>
+<p>Como se puede ver en las figuras anteriores, en el listado que encontramos en la pestaña <em>actions</em> hemos localizado una ejecución del workflow “CI” que hemos creado, que nos indica además que se ha lanzado a raíz de que se ha <em>pusheado</em> un nuevo commit en la rama <em>main</em> y además nos indica en qué instante de tiempo se llevó a cabo este evento.</p>
+<p>Si hacemos clic sobre este elemento del listado podemos revisar el detalle de la ejecución de este workflow (ver <a href="#fig-review-workflow-2" class="quarto-xref">Figura&nbsp;<span>3.6</span></a>), que entre otras cosas nos ofrece el estado (“Success” o exitoso), la duración de su ejecución (10 segundos), el usuario que generó el evento que dió lugar a su ejecución, entre otros detalles. También podemos ver todos los <em>jobs</em> que se han ejecutado durante este workflow, en este caso sólo el denominado “build”. Si hacemos clic sobre él entraríamos en su vista de detalle (ver <a href="#fig-review-workflow-3" class="quarto-xref">Figura&nbsp;<span>3.7</span></a>) donde se nos detallan los mensajes de salida de las ejecuciones de las diferentes acciones que se han producido durante este <em>job</em>. Por ejemplo, si revisamos el detalle de la ejecución del script que denominamos “Run a multi-line script” podemos ver las instrucciones que contenía el script y la salida correspondiente (en este caso los mensajes del <em>echo</em>).</p>
+<blockquote class="blockquote">
+<p>Es importante señalar que si alguno de los pasos del workflow fallase por algún motivo, no continuaría haciendo nada de lo demás. Si esto ocurriera, normalmente GitHub nos notificaría mediante un correo electrónico indicando los detalles del error.</p>
+</blockquote>
+<p>Como hemos mencionado antes, en este workflow tenemos una instrucción que nos permite activarlo de forma manual. Para hacer esto, nos dirigimos a la pestaña <em>actions</em> del repositorio de GitHub y podremos comprobar que en el panel lateral izquierdo nos aparecerá un listado donde aparece un elemento denominado “CI”, que es el nombre que le hemos asignado a nuestro nuevo workflow:</p>
+<div id="fig-listado-workflows" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-listado-workflows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-9.png" class="img-fluid figure-img" style="width:40.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-listado-workflows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.8: Listado de workflows
+</figcaption>
+</figure>
+</div>
+<p>Si pulsamos sobre él nos aparecerá un listado de las ejecuciones que ha tenido dicho workflow (igual que aparecía en <a href="#fig-review-workflow-1" class="quarto-xref">Figura&nbsp;<span>3.5</span></a>) y en la esquina superior derecha podremos localizar un botón denominado “Run workflow”. Si lo pulsamos nos aparecerá un cuadro de dialogo donde se nos pide la rama sobre la que ejecutar el workflow, que habitualmente va a ser “main”, por lo que simplemente confirmamos en el botón con el mismo nombre y esto hará que el workflow se ejecute de igual manera que ocurrió cuando se activó de forma automática cuando añadimos un <em>push</em> al “main”.</p>
+<div id="fig-run-workflow" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-run-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-10.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-run-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.9: Ejecutar un workflow manualmente
+</figcaption>
+</figure>
+</div>
+<div id="fig-running-workflow" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-running-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-11.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-running-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.10: Vista de un workflow en ejecución
+</figcaption>
+</figure>
+</div>
+<p>Cuando un workflow está en ejecución, si revisamos su detalle podremos ver algo similar a lo que se muestra en <a href="#fig-running-workflow" class="quarto-xref">Figura&nbsp;<span>3.10</span></a>. Una vez finalizado, podríamos dirigirnos a la pestaña <em>actions</em> nuevamente y si nos fijamos podemos diferenciar cuando el workflow se ejecutó de forma automática y de forma manual, como se puede observar en la siguiente figura.</p>
+<div id="fig-workflow-manual-vs-auto" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-workflow-manual-vs-auto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-12.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-workflow-manual-vs-auto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;3.11: Diferenciando un workflow manual y una ejecución automática
+</figcaption>
+</figure>
+</div>
+<blockquote class="blockquote">
+<p>Desde la vista del detalle de la ejecución de un workflow (por ejemplo lo que se muestra en <a href="#fig-running-workflow" class="quarto-xref">Figura&nbsp;<span>3.10</span></a>) podemos acceder al archivo donde se encuentra definido dicho workflow, si pulsamos en el botón “<strong>Workflow file</strong>” del menú lateral izquierdo (bajo la sección “Run details”).</p>
+</blockquote>
+<p>Para finalizar, como hemos añadido un nuevo archivo en nuestro repositorio remoto alojado en GitHub, deberíamos traer estos cambios a nuestra copia local del repositorio. Para ello como sabéis hay que ejecutar un <em>pull</em> del main desde el terminal en nuestro equipo local, y si todo va bien ya tendriamos en nuestro equipo el fichero <code>my-first-workflow.yml</code> que hemos creado desde GitHub y podríamos trabajar con él, revisarlo y modificarlo directamente en local. Es posible que al abrir por primera vez un archivo de este estilo el editor de código VS Code os pregunte si deseáis instalar la extensión para trabajar con workflows, podéis hacerlo y esto nos proporcionará revisión del código automática en tiempo real de estos archivos.</p>
+</section>
+<section id="variables-de-usuario-y-entorno" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="variables-de-usuario-y-entorno"><span class="header-section-number">3.3</span> Variables de usuario y entorno</h2>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Código desplazable","output":"Salida desplazable"};
+  </script>
+<nav class="page-navigation" aria-label="Página">
+  <div class="nav-page nav-page-previous">
+      <a href="../../temas/03-produccion/m03-t02-github.html" class="pagination-link" aria-label="Github">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Github</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
